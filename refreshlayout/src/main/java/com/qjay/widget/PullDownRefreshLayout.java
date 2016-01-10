@@ -27,6 +27,12 @@ public class PullDownRefreshLayout extends ViewGroup implements NestedScrollingP
      * 目标View,即响应刷新控件的View,is this view group's child view
      */
     private View mTarget;
+    private View mRefreshView;
+    /**
+     * 当前是否刷新中
+     */
+    private boolean isRefreshing;
+
     public PullDownRefreshLayout(Context context) {
         super(context);
     }
@@ -49,8 +55,30 @@ public class PullDownRefreshLayout extends ViewGroup implements NestedScrollingP
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
+    /**
+     * 确保目标不为空,ensure target view not null.
+     */
+    private void ensureTarget() {
+        if (mTarget == null) {
+            for (int i = 0; i < getChildCount(); i++) {
+                View child = getChildAt(i);
+                if (!child.equals(mRefreshView)) {
+                    mTarget = child;
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * @return 返回当前是否正在刷新中
+     */
+    public boolean isRefreshing() {
+        return isRefreshing;
+    }
+
     @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
 
     }
 
