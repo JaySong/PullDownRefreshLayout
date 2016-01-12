@@ -2,11 +2,14 @@ package com.qjay.widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingParent;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 
 /**
@@ -17,6 +20,7 @@ import android.view.ViewGroup;
  *          <p>
  *          #.实现一个可自定义刷新View样式的刷新控件，非侵入式实现，适用于所有View
  *          #.实现的两个接口来自v4包，所以使用此控件可能要将v4包添加到项目中
+ *          #.实现原理参考{@link android.support.v4.widget.SwipeRefreshLayout}
  *          </p>
  * @see android.support.v4.view.NestedScrollingParent
  * @see android.support.v4.view.NestedScrollingChild
@@ -24,30 +28,41 @@ import android.view.ViewGroup;
 public class PullDownRefreshLayout extends ViewGroup implements NestedScrollingParent,
         NestedScrollingChild {
     /**
+     * 是否可用属性
+     */
+    private static final int[] LAYOUT_ATTRS = new int[] {
+            android.R.attr.enabled
+    };
+    /**
      * 目标View,即响应刷新控件的View,is this view group's child view
      */
     private View mTarget;
+    /**
+     * 刷新样式的View
+     */
     private View mRefreshView;
     /**
      * 当前是否刷新中
      */
     private boolean isRefreshing;
+    private int mTouchSlop;
+    private int mMediumAnimationDuration;
 
     public PullDownRefreshLayout(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public PullDownRefreshLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-    }
+        mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+        mMediumAnimationDuration = getResources().getInteger(
+                android.R.integer.config_mediumAnimTime);
+        //下面三行主要设置是否可用
+        final TypedArray a = context.obtainStyledAttributes(attrs, LAYOUT_ATTRS);
+        setEnabled(a.getBoolean(0, true));
+        a.recycle();
 
-    public PullDownRefreshLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    public PullDownRefreshLayout(Context context, AttributeSet attrs, int defStyleAttr, int defStyleRes) {
-        super(context, attrs, defStyleAttr, defStyleRes);
+        final DisplayMetrics metrics = getResources().getDisplayMetrics();
     }
 
     @Override
