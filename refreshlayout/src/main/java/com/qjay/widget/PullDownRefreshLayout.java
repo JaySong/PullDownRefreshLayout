@@ -63,6 +63,7 @@ public class PullDownRefreshLayout extends ViewGroup implements NestedScrollingP
         a.recycle();
 
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
+        //这是我的分支
     }
 
     @Override
